@@ -7,6 +7,10 @@ type PetContextType = {
   handleChangeSelectedPetId: (id: string) => void;
   selectedPetId: string | null;
   selectedPet: TPet | undefined;
+  numberOfPets: number;
+  searchQuery: string;
+  handleChangeSearchQuery: (newValue: string) => void;
+  handleCheckoutpet: (id: string) => void;
 };
 
 export const PetContext = createContext<PetContextType | null>(null);

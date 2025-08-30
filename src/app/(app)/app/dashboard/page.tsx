@@ -5,6 +5,8 @@ import ContentBlock from "@/components/ContentBlock";
 import PetList from "@/components/PetList";
 import PetDetails from "@/components/PetDetails";
 import { Metadata } from "next";
+import PetButton from "@/components/PetButton";
+import { PlusIcon } from "lucide-react";
 
 export const metadata: Metadata = {
   title: "Dahsboard",
@@ -22,9 +24,14 @@ export default async function page() {
           <SearchForm />
         </div>
 
-        <div className="md:row-start-2 md:row-span-full md:col-start-1 md:col-span-1">
+        <div className="md:row-start-2 md:row-span-full md:col-start-1 md:col-span-1 relative">
           <ContentBlock>
             <PetList />
+            <div className="absolute bottom-4 right-4">
+              <PetButton actionType="add">
+                <PlusIcon className="h-6 w-6" size={"icon"} />
+              </PetButton>
+            </div>
           </ContentBlock>
         </div>
 

@@ -2,6 +2,7 @@
 import { usePetContext } from "@/lib/hooks";
 import { TPet } from "@/lib/types";
 import Image from "next/image";
+import PetButton from "./PetButton";
 
 export default function PetDetails() {
   const { selectedPet } = usePetContext();
@@ -30,18 +31,30 @@ function EmptyView() {
 }
 
 function Topbar({ pet }: { pet: TPet }) {
+  const { handleCheckoutpet } = usePetContext();
   return (
-    <div className="flex items-center bg-white px-8 py-5 border-b border-light">
-      <Image
-        src={pet.imageUrl}
-        alt="Selected pet image"
-        height={75}
-        width={75}
-        className="h-[75px] w-[75px] rounded-full object-cover"
-      />
+    <>
+      <div className="flex flex-col sm:flex-row justify-center sm:justify-between items-center gap-5 sm:gap-0 bg-white px-8 py-5 border-b border-light">
+        <Image
+          src={pet.imageUrl}
+          alt="Selected pet image"
+          height={75}
+          width={75}
+          className="h-[75px] w-[75px] rounded-full object-cover"
+        />
 
-      <h2 className="text-3xl font-semibold leading-7 ml-5">{pet.name}</h2>
-    </div>
+        <h2 className="text-3xl font-semibold leading-7 sm:ml-5">{pet.name}</h2>
+        <div className="sm:ml-auto space-x-2">
+          <PetButton actionType="edit">Edit</PetButton>
+          <PetButton
+            handleClick={() => handleCheckoutpet(pet.id)}
+            actionType="checkout"
+          >
+            Checkout
+          </PetButton>
+        </div>
+      </div>
+    </>
   );
 }
 
@@ -64,7 +77,7 @@ function OtherInfo({ pet }: { pet: TPet }) {
 
 function Notes({ pet }: { pet: TPet }) {
   return (
-    <section className="flex-1 bg-white px-7 py-5 rounded-md mb-9 mx-8 border border-black/[0.08]">
+    <section className="flex-1 bg-white px-7 py-5 rounded-md mb-9 mx-8 border border-light">
       {pet.notes}
     </section>
   );

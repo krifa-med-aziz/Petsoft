@@ -1,13 +1,27 @@
 "use client";
 import { usePetContext } from "@/lib/hooks";
+import { TPet } from "@/lib/types";
 import { cn } from "@/lib/utils";
 import Image from "next/image";
 
 export default function PetList() {
-  const { pets, handleChangeSelectedPetId, selectedPetId } = usePetContext();
+  const { pets, handleChangeSelectedPetId, selectedPetId, searchQuery } =
+    usePetContext();
+  const filteredPets: TPet[] = pets.filter((pet) =>
+    pet.name.toLocaleLowerCase().includes(searchQuery.toLocaleLowerCase())
+  );
+
+  if (filteredPets.length === 0) {
+    return (
+      <div className="h-full w-full flex items-center justify-center">
+        <p className="text-black/50">No Pets found</p>
+      </div>
+    );
+  }
+
   return (
-    <ul className="bg-white border-b border-black/[0.08]">
-      {pets.map((pet) => (
+    <ul className="bg-white border-b border-light">
+      {filteredPets.map((pet) => (
         <li key={pet.id}>
           <button
             onClick={() => handleChangeSelectedPetId(pet.id)}
