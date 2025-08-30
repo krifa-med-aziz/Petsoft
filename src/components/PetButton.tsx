@@ -8,8 +8,7 @@ import {
   DialogTrigger,
   DialogHeader,
 } from "./ui/dialog";
-
-import PetForm from "./PetForm";
+import { PetForm } from "./PetForm";
 
 type PetButtonProps = {
   actionType: "add" | "checkout" | "edit";
