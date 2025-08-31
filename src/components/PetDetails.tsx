@@ -3,6 +3,7 @@ import { usePetContext } from "@/lib/hooks";
 import { TPet } from "@/lib/types";
 import Image from "next/image";
 import PetButton from "./PetButton";
+import { capitalizeFirstLetter } from "@/lib/utils";
 
 export default function PetDetails() {
   const { selectedPet } = usePetContext();
@@ -43,7 +44,9 @@ function Topbar({ pet }: { pet: TPet }) {
           className="h-[75px] w-[75px] rounded-full object-cover"
         />
 
-        <h2 className="text-3xl font-semibold leading-7 sm:ml-5">{pet.name}</h2>
+        <h2 className="text-3xl font-semibold leading-7 sm:ml-5">
+          {capitalizeFirstLetter(pet.name)}
+        </h2>
         <div className="sm:ml-auto space-x-2">
           <PetButton actionType="edit">Edit</PetButton>
           <PetButton
@@ -65,7 +68,9 @@ function OtherInfo({ pet }: { pet: TPet }) {
         <h3 className="text-[13px] font-medium uppercase text-zinc-700">
           Owner name
         </h3>
-        <p className="mt-1 text-lg text-zinc-800">{pet.ownerName}</p>
+        <p className="mt-1 text-lg text-zinc-800">
+          {capitalizeFirstLetter(pet.ownerName)}
+        </p>
       </div>
       <div>
         <h3 className="text-[13px] font-medium uppercase text-zinc-700">age</h3>
@@ -78,7 +83,7 @@ function OtherInfo({ pet }: { pet: TPet }) {
 function Notes({ pet }: { pet: TPet }) {
   return (
     <section className="flex-1 bg-white px-7 py-5 rounded-md mb-9 mx-8 border border-light">
-      {pet.notes}
+      {pet.notes ? pet.notes : "No notes available."}
     </section>
   );
 }

@@ -33,6 +33,17 @@ export default function PetContextProvider({
   const handleAddPet = (newPet: TPet) => {
     setPets((prev) => [...prev, newPet]);
   };
+  const handleEditpet = (petId: string, updatedPet: TPet) => {
+    setPets((prev) =>
+      prev.map((pet) => {
+        if (pet.id === petId) {
+          return { ...updatedPet };
+        }
+        return pet;
+      })
+    );
+  };
+
   return (
     <PetContext.Provider
       value={{
@@ -44,6 +55,8 @@ export default function PetContextProvider({
         searchQuery,
         handleChangeSearchQuery,
         handleCheckoutpet,
+        handleAddPet,
+        handleEditpet,
       }}
     >
       {children}

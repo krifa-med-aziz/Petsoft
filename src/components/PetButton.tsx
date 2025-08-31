@@ -1,4 +1,5 @@
-import React from "react";
+"use client";
+import React, { useState } from "react";
 import { Button } from "./ui/button";
 import {
   Dialog,
@@ -21,6 +22,8 @@ export default function PetButton({
   children,
   handleClick,
 }: PetButtonProps) {
+  const [isFormOpen, setIsFormOpen] = useState(false);
+
   if (actionType === "checkout") {
     return (
       <Button variant="secondary" onClick={handleClick}>
@@ -30,7 +33,7 @@ export default function PetButton({
   }
 
   return (
-    <Dialog>
+    <Dialog open={isFormOpen} onOpenChange={setIsFormOpen}>
       <DialogTrigger asChild>
         {actionType === "add" ? (
           <Button size="icon">{children}</Button>
@@ -46,15 +49,11 @@ export default function PetButton({
           </DialogTitle>
         </DialogHeader>
         <DialogDescription>
-          Fill out the form to add or edit a pet.
+          Fill out the form to {actionType === "add" ? "add" : "edit"} a pet
         </DialogDescription>
         <PetForm
-        // actionType={actionType}
-        // onFormSubmission={() => {
-        //   flushSync(() => {
-        //     setIsFormOpen(false);
-        //   });
-        // }}
+          actionType={actionType}
+          onFormSubmission={() => setIsFormOpen(false)}
         />
       </DialogContent>
     </Dialog>

@@ -11,6 +11,8 @@ type PetContextType = {
   searchQuery: string;
   handleChangeSearchQuery: (newValue: string) => void;
   handleCheckoutpet: (id: string) => void;
+  handleAddPet: (newPet: TPet) => void;
+  handleEditpet: (petId: string, updatedPet: TPet) => void;
 };
 
 export const PetContext = createContext<PetContextType | null>(null);
