@@ -2,16 +2,16 @@
 import { useState } from "react";
 import { PetContext } from "./pet-context";
 import { TPet } from "@/lib/types";
+import { addPet } from "@/actions/actions";
 
 export default function PetContextProvider({
   children,
-  data,
+  data: pets,
 }: {
   children: React.ReactNode;
   data: TPet[];
 }) {
   // state
-  const [pets, setPets] = useState<TPet[]>(data);
   const [selectedPetId, setSelectedPetId] = useState<string | null>(null);
   const [searchQuery, setSearchQuery] = useState("");
 
@@ -26,23 +26,23 @@ export default function PetContextProvider({
   const handleChangeSearchQuery = (newValue: string) => {
     setSearchQuery(newValue);
   };
-  const handleCheckoutpet = (id: string) => {
-    setPets((prev) => prev.filter((pet) => pet.id !== id));
-    setSelectedPetId(null);
+  // const handleCheckoutpet = (id: string) => {
+  //   setPets((prev) => prev.filter((pet) => pet.id !== id));
+  //   setSelectedPetId(null);
+  // };
+  const handleAddPet = async (newPet: Omit<TPet, "id">) => {
+    await addPet(newPet);
   };
-  const handleAddPet = (newPet: TPet) => {
-    setPets((prev) => [...prev, newPet]);
-  };
-  const handleEditpet = (petId: string, updatedPet: TPet) => {
-    setPets((prev) =>
-      prev.map((pet) => {
-        if (pet.id === petId) {
-          return { ...updatedPet };
-        }
-        return pet;
-      })
-    );
-  };
+  // const handleEditpet = (petId: string, updatedPet: Omit<TPet, "id">) => {
+  //   setPets((prev) =>
+  //     prev.map((pet) => {
+  //       if (pet.id === petId) {
+  //         return { ...updatedPet, id: petId };
+  //       }
+  //       return pet;
+  //     })
+  //   );
+  // };
 
   return (
     <PetContext.Provider
@@ -54,9 +54,9 @@ export default function PetContextProvider({
         numberOfPets,
         searchQuery,
         handleChangeSearchQuery,
-        handleCheckoutpet,
+        // handleCheckoutpet,
         handleAddPet,
-        handleEditpet,
+        // handleEditpet,
       }}
     >
       {children}

@@ -15,7 +15,7 @@ import {
 import { Input } from "@/components/ui/input";
 import { Textarea } from "./ui/textarea";
 import { usePetContext } from "@/lib/hooks";
-import { TPet } from "@/lib/types";
+import { addPet } from "@/actions/actions";
 
 const FormSchema = z.object({
   name: z.string().min(2, {
@@ -43,8 +43,7 @@ type PetFormPorps = {
 };
 
 export function PetForm({ actionType, onFormSubmission }: PetFormPorps) {
-  const { handleAddPet, numberOfPets, selectedPet, handleEditpet } =
-    usePetContext();
+  const { selectedPet } = usePetContext();
 
   const form = useForm<z.infer<typeof FormSchema>>({
     resolver: zodResolver(FormSchema),
@@ -65,29 +64,34 @@ export function PetForm({ actionType, onFormSubmission }: PetFormPorps) {
             notes: selectedPet?.notes ?? "",
           },
   });
-  function onSubmit(data: z.infer<typeof FormSchema>) {
-    // if (!selectedPet) return;
-    const pet: TPet = {
-      ...data,
-      id: actionType === "add" ? String(numberOfPets + 1) : selectedPet!.id,
-      age: Number(data.age),
-      imageUrl:
-        data.imageUrl.trim() === ""
-          ? "https://bytegrad.com/course-assets/react-nextjs/pet-placeholder.png"
-          : data.imageUrl,
-    };
-    if (actionType === "add") {
-      handleAddPet(pet);
-    }
-    if (actionType === "edit") {
-      handleEditpet(selectedPet!.id, pet);
-    }
-    onFormSubmission();
-  }
+  // function onSubmit(data: z.infer<typeof FormSchema>) {
+  //   // if (!selectedPet) return;
+  //   const pet: Omit<TPet, "id"> = {
+  //     ...data,
+  //     age: Number(data.age),
+  //     imageUrl:
+  //       data.imageUrl.trim() === ""
+  //         ? "https://bytegrad.com/course-assets/react-nextjs/pet-placeholder.png"
+  //         : data.imageUrl,
+  //   };
+  //   if (actionType === "add") {
+  //     handleAddPet(pet);
+  //   }
+  //   if (actionType === "edit") {
+  //     handleEditpet(selectedPet!.id, pet);
+  //   }
+  //   onFormSubmission();
+  // }
 
   return (
     <Form {...form}>
-      <form onSubmit={form.handleSubmit(onSubmit)} className="w-full space-y-6">
+      <form
+        action={async (formData) => {
+          await addPet(formData);
+          onFormSubmission();
+        }}
+        className="w-full space-y-6"
+      >
         <FormField
           control={form.control}
           name="name"
