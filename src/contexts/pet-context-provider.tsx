@@ -54,9 +54,7 @@ export default function PetContextProvider({
         numberOfPets,
         searchQuery,
         handleChangeSearchQuery,
-        // handleCheckoutpet,
         handleAddPet,
-        // handleEditpet,
       }}
     >
       {children}

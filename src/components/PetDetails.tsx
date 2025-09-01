@@ -4,6 +4,8 @@ import { TPet } from "@/lib/types";
 import Image from "next/image";
 import PetButton from "./PetButton";
 import { capitalizeFirstLetter } from "@/lib/utils";
+import { checkOutPet } from "@/actions/actions";
+import { useTransition } from "react";
 
 export default function PetDetails() {
   const { selectedPet } = usePetContext();
@@ -32,7 +34,7 @@ function EmptyView() {
 }
 
 function Topbar({ pet }: { pet: TPet }) {
-  const { handleCheckoutpet } = usePetContext();
+  const [isPending, startTransition] = useTransition();
   return (
     <>
       <div className="flex flex-col sm:flex-row justify-center sm:justify-between items-center gap-5 sm:gap-0 bg-white px-8 py-5 border-b border-light">
@@ -50,8 +52,13 @@ function Topbar({ pet }: { pet: TPet }) {
         <div className="sm:ml-auto space-x-2">
           <PetButton actionType="edit">Edit</PetButton>
           <PetButton
-            handleClick={() => handleCheckoutpet(pet.id)}
+            handleClick={() => {
+              startTransition(async () => {
+                await checkOutPet(pet.id);
+              });
+            }}
             actionType="checkout"
+            disabled={isPending}
           >
             Checkout
           </PetButton>

@@ -15,7 +15,7 @@ export default async function appLayout({
   return (
     <>
       <BackgroundPattern />
-      <div className="max-w-[1050px] mx-auto px-4 lg:px-0 flex flex-col min-h-screen">
+      <div className="max-w-[1050px] mx-auto px-4 lg:px-0 flex flex-col h-full">
         <AppHeader />
         <PetContextProvider data={Pets}>{children}</PetContextProvider>
         <AppFooter />

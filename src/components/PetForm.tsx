@@ -3,7 +3,6 @@
 import { zodResolver } from "@hookform/resolvers/zod";
 import { useForm } from "react-hook-form";
 import { z } from "zod";
-import { Button } from "@/components/ui/button";
 import {
   Form,
   FormControl,
@@ -15,7 +14,9 @@ import {
 import { Input } from "@/components/ui/input";
 import { Textarea } from "./ui/textarea";
 import { usePetContext } from "@/lib/hooks";
-import { addPet } from "@/actions/actions";
+import { addPet, editPet } from "@/actions/actions";
+import PetFormButton from "./PetFormButton";
+import { toast } from "sonner";
 
 const FormSchema = z.object({
   name: z.string().min(2, {
@@ -87,7 +88,21 @@ export function PetForm({ actionType, onFormSubmission }: PetFormPorps) {
     <Form {...form}>
       <form
         action={async (formData) => {
-          await addPet(formData);
+          if (actionType === "add") {
+            const error = await addPet(formData);
+            if (error) {
+              toast.warning(error.message);
+              return;
+            } else {
+              toast.success("Pet added successfully!");
+            }
+          } else if (actionType === "edit" && selectedPet) {
+            const error = await editPet(selectedPet.id, formData);
+            if (error) {
+              toast.warning(error.message);
+              return;
+            }
+          }
           onFormSubmission();
         }}
         className="w-full space-y-6"
@@ -162,9 +177,7 @@ export function PetForm({ actionType, onFormSubmission }: PetFormPorps) {
             </FormItem>
           )}
         />
-        <Button type="submit" className="block mx-auto sm:mx-0 sm:ml-auto">
-          {actionType === "add" ? "Add a new Pet" : "Edit Pet"}
-        </Button>
+        <PetFormButton actionType={actionType} />
       </form>
     </Form>
   );
