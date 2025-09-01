@@ -14,13 +14,7 @@ export default function PetFormButton({
       disabled={pending}
       className="block mx-auto sm:mx-0 sm:ml-auto"
     >
-      {pending && actionType === "add"
-        ? "Adding new Pet..."
-        : pending && actionType === "edit"
-        ? "Editing the Pet"
-        : actionType === "add"
-        ? "Add new Pet"
-        : "Edit Pet"}
+      {actionType === "add" ? "Add new Pet" : "Edit Pet"}
     </Button>
   );
 }

@@ -14,9 +14,7 @@ import {
 import { Input } from "@/components/ui/input";
 import { Textarea } from "./ui/textarea";
 import { usePetContext } from "@/lib/hooks";
-import { addPet, editPet } from "@/actions/actions";
 import PetFormButton from "./PetFormButton";
-import { toast } from "sonner";
 
 const FormSchema = z.object({
   name: z.string().min(2, {
@@ -44,7 +42,7 @@ type PetFormPorps = {
 };
 
 export function PetForm({ actionType, onFormSubmission }: PetFormPorps) {
-  const { selectedPet } = usePetContext();
+  const { selectedPet, handleAddPet, handleEditPet } = usePetContext();
 
   const form = useForm<z.infer<typeof FormSchema>>({
     resolver: zodResolver(FormSchema),
@@ -65,43 +63,24 @@ export function PetForm({ actionType, onFormSubmission }: PetFormPorps) {
             notes: selectedPet?.notes ?? "",
           },
   });
-  // function onSubmit(data: z.infer<typeof FormSchema>) {
-  //   // if (!selectedPet) return;
-  //   const pet: Omit<TPet, "id"> = {
-  //     ...data,
-  //     age: Number(data.age),
-  //     imageUrl:
-  //       data.imageUrl.trim() === ""
-  //         ? "https://bytegrad.com/course-assets/react-nextjs/pet-placeholder.png"
-  //         : data.imageUrl,
-  //   };
-  //   if (actionType === "add") {
-  //     handleAddPet(pet);
-  //   }
-  //   if (actionType === "edit") {
-  //     handleEditpet(selectedPet!.id, pet);
-  //   }
-  //   onFormSubmission();
-  // }
 
   return (
     <Form {...form}>
       <form
         action={async (formData) => {
+          const petData = {
+            name: formData.get("name") as string,
+            ownerName: formData.get("ownerName") as string,
+            imageUrl:
+              (formData.get("imageUrl") as string) ||
+              "https://bytegrad.com/course-assets/react-nextjs/pet-placeholder.png",
+            age: Number(formData.get("age")),
+            notes: formData.get("notes") as string,
+          };
           if (actionType === "add") {
-            const error = await addPet(formData);
-            if (error) {
-              toast.warning(error.message);
-              return;
-            } else {
-              toast.success("Pet added successfully!");
-            }
+            handleAddPet(petData);
           } else if (actionType === "edit" && selectedPet) {
-            const error = await editPet(selectedPet.id, formData);
-            if (error) {
-              toast.warning(error.message);
-              return;
-            }
+            handleEditPet(selectedPet.id, petData);
           }
           onFormSubmission();
         }}
