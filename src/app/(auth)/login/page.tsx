@@ -1,9 +1,23 @@
+import AuthForm from "@/components/AuthForm";
+import H1 from "@/components/H1";
 import { Metadata } from "next";
+import Link from "next/link";
 
 export const metadata: Metadata = {
   title: "Login",
 };
 
 export default function Home() {
-  return <main>Login page</main>;
+  return (
+    <main className="flex flex-col justify-center gap-y-3 items-center px-4">
+      <H1>Log In</H1>
+      <AuthForm />
+      <p className="mt-2 text-zinc-500 text-sm">
+        No account yet?{" "}
+        <Link href="/signup" className="font-bold">
+          Sing up
+        </Link>
+      </p>
+    </main>
+  );
 }
