@@ -3,6 +3,6 @@ export type TPet = {
   name: string;
   ownerName: string;
   imageUrl: string;
-  age: number;
+  age: string;
   notes: string;
 };

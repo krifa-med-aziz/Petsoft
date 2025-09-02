@@ -15,26 +15,8 @@ import { Input } from "@/components/ui/input";
 import { Textarea } from "./ui/textarea";
 import { usePetContext } from "@/lib/hooks";
 import PetFormButton from "./PetFormButton";
-
-const FormSchema = z.object({
-  name: z.string().min(2, {
-    message: "Name must be at least 2 characters.",
-  }),
-  ownerName: z.string().min(2, {
-    message: "OwnerName must be at least 2 characters.",
-  }),
-  imageUrl: z.string(),
-  age: z.string().refine(
-    (val) => {
-      const num = Number(val);
-      return !isNaN(num) && num > 0;
-    },
-    {
-      message: "Age must be a positive number.",
-    }
-  ),
-  notes: z.string(),
-});
+import { DEFAULT_PET_IMAGE } from "@/lib/constants";
+import { petFormSchema } from "@/lib/validations";
 
 type PetFormPorps = {
   actionType: "add" | "edit";
@@ -44,23 +26,23 @@ type PetFormPorps = {
 export function PetForm({ actionType, onFormSubmission }: PetFormPorps) {
   const { selectedPet, handleAddPet, handleEditPet } = usePetContext();
 
-  const form = useForm<z.infer<typeof FormSchema>>({
-    resolver: zodResolver(FormSchema),
+  const form = useForm<z.infer<typeof petFormSchema>>({
+    resolver: zodResolver(petFormSchema),
     defaultValues:
-      selectedPet && actionType === "add"
+      actionType === "edit"
         ? {
+            name: selectedPet?.name,
+            ownerName: selectedPet?.ownerName,
+            imageUrl: selectedPet?.imageUrl,
+            age: String(selectedPet?.age),
+            notes: selectedPet?.notes,
+          }
+        : {
             name: "",
             ownerName: "",
             imageUrl: "",
             age: "",
             notes: "",
-          }
-        : {
-            name: selectedPet?.name ?? "",
-            ownerName: selectedPet?.ownerName ?? "",
-            imageUrl: selectedPet?.imageUrl ?? "",
-            age: selectedPet?.age !== undefined ? String(selectedPet.age) : "",
-            notes: selectedPet?.notes ?? "",
           },
   });
 
@@ -68,13 +50,14 @@ export function PetForm({ actionType, onFormSubmission }: PetFormPorps) {
     <Form {...form}>
       <form
         action={async (formData) => {
+          const isValid = await form.trigger();
+          if (!isValid) return;
+
           const petData = {
             name: formData.get("name") as string,
             ownerName: formData.get("ownerName") as string,
-            imageUrl:
-              (formData.get("imageUrl") as string) ||
-              "https://bytegrad.com/course-assets/react-nextjs/pet-placeholder.png",
-            age: Number(formData.get("age")),
+            imageUrl: (formData.get("imageUrl") as string) || DEFAULT_PET_IMAGE,
+            age: String(formData.get("age")),
             notes: formData.get("notes") as string,
           };
           if (actionType === "add") {
@@ -91,7 +74,9 @@ export function PetForm({ actionType, onFormSubmission }: PetFormPorps) {
           name="name"
           render={({ field }) => (
             <FormItem>
-              <FormLabel>Name</FormLabel>
+              <FormLabel>
+                Name<span className="text-red-600">*</span>
+              </FormLabel>
               <FormControl>
                 <Input type="text" id="name" {...field} />
               </FormControl>
@@ -104,7 +89,9 @@ export function PetForm({ actionType, onFormSubmission }: PetFormPorps) {
           name="ownerName"
           render={({ field }) => (
             <FormItem>
-              <FormLabel>Owner Name</FormLabel>
+              <FormLabel>
+                Owner Name <span className="text-red-600">*</span>
+              </FormLabel>
               <FormControl>
                 <Input id="ownername" {...field} />
               </FormControl>
@@ -130,7 +117,9 @@ export function PetForm({ actionType, onFormSubmission }: PetFormPorps) {
           name="age"
           render={({ field }) => (
             <FormItem>
-              <FormLabel>Age</FormLabel>
+              <FormLabel>
+                Age <span className="text-red-600">*</span>
+              </FormLabel>
               <FormControl>
                 <Input id="age" type="number" {...field} />
               </FormControl>
