@@ -11,7 +11,7 @@ export default function Page() {
   return (
     <main className="flex flex-col justify-center gap-y-3 items-center px-4">
       <H1>Sign Up</H1>
-      <AuthForm />
+      <AuthForm type="signup" />
       <p className="mt-2 text-sm text-zinc-500">
         Already have an account ?{" "}
         <Link href="/login" className="font-bold">

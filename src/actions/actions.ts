@@ -4,6 +4,13 @@ import prisma from "@/lib/db";
 import { petFormSchema, petIdSchema } from "@/lib/validations";
 import { revalidatePath } from "next/cache";
 
+// --- user actions ---
+// export async function logIn(formData: FormData) {
+//   const authData = Object.fromEntries(formData.entries());
+//   await signIn("credentials", authData);
+// }
+
+// --- pet actions ---
 export async function addPet(newPet: unknown) {
   const validatePet = petFormSchema.safeParse(newPet);
   if (!validatePet.success) {

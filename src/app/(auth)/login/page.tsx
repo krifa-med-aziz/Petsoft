@@ -11,7 +11,7 @@ export default function Home() {
   return (
     <main className="flex flex-col justify-center gap-y-3 items-center px-4">
       <H1>Log In</H1>
-      <AuthForm />
+      <AuthForm type="login" />
       <p className="mt-2 text-zinc-500 text-sm">
         No account yet?{" "}
         <Link href="/signup" className="font-bold">
