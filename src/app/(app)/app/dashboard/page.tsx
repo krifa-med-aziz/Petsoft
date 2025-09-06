@@ -7,12 +7,16 @@ import PetDetails from "@/components/PetDetails";
 import { Metadata } from "next";
 import PetButton from "@/components/PetButton";
 import { PlusIcon } from "lucide-react";
+import { auth } from "@/lib/auth";
+import { redirect } from "next/navigation";
 
 export const metadata: Metadata = {
   title: "Dahsboard",
 };
 
 export default async function page() {
+  const session = await auth();
+  if (!session) redirect("/login");
   return (
     <main>
       <div className="flex justify-between py-8 text-white">

@@ -3,8 +3,9 @@ import AppHeader from "@/components/App-header";
 import BackgroundPattern from "@/components/BackgroundPattern";
 import PetContextProvider from "@/contexts/pet-context-provider";
 import { TPet } from "@/lib/types";
-import prisma from "@/lib/db";
+
 import React from "react";
+import { prisma } from "../../../../prisma/prisma";
 
 export default async function appLayout({
   children,

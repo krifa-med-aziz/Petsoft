@@ -2,6 +2,7 @@ import React from "react";
 import { Label } from "./ui/label";
 import { Input } from "./ui/input";
 import { Button } from "./ui/button";
+import { logIn, SignUp } from "@/actions/actions";
 
 type AuthFormProps = {
   type: "login" | "signup";
@@ -9,8 +10,11 @@ type AuthFormProps = {
 
 export default function AuthForm({ type }: AuthFormProps) {
   return (
-    <form className="flex flex-col gap-y-6">
-      <div className="grid w-full max-w-sm items-center gap-3 space-y-1">
+    <form
+      action={type === "login" ? logIn : SignUp}
+      className="flex flex-col gap-y-6"
+    >
+      <div className="grid w-full </form>max-w-sm items-center gap-3 space-y-1">
         <Label htmlFor="email">Email</Label>
         <Input
           type="email"
