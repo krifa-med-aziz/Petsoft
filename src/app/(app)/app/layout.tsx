@@ -6,13 +6,21 @@ import { TPet } from "@/lib/types";
 
 import React from "react";
 import { prisma } from "../../../../prisma/prisma";
+import { auth } from "@/lib/auth";
+import { redirect } from "next/navigation";
 
 export default async function appLayout({
   children,
 }: Readonly<{
   children: React.ReactNode;
 }>) {
-  const Pets: TPet[] = await prisma.pet.findMany();
+  const session = await auth();
+  if (!session?.user) redirect("/login");
+  const Pets: TPet[] = await prisma.pet.findMany({
+    where: {
+      userId: session.user.id,
+    },
+  });
   return (
     <>
       <BackgroundPattern />

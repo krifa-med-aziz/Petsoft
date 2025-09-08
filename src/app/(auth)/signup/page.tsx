@@ -5,13 +5,15 @@ import { Metadata } from "next";
 import Link from "next/link";
 import { redirect } from "next/navigation";
 
+export const dynamic = "force-dynamic";
+
 export const metadata: Metadata = {
   title: "Sign Up",
 };
 
 export default async function Page() {
   const session = await auth();
-  if (session) redirect("/app/account");
+  if (session?.user) redirect("/app/dashboard");
   return (
     <main className="flex flex-col justify-center gap-y-3 items-center px-4">
       <H1>Sign Up</H1>
@@ -19,7 +21,7 @@ export default async function Page() {
       <p className="mt-2 text-sm text-zinc-500">
         Already have an account ?{" "}
         <Link href="/login" className="font-bold">
-          Sing up
+          Log In
         </Link>
       </p>
     </main>

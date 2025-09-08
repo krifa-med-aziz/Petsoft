@@ -10,13 +10,15 @@ import { PlusIcon } from "lucide-react";
 import { auth } from "@/lib/auth";
 import { redirect } from "next/navigation";
 
+export const dynamic = "force-dynamic";
+
 export const metadata: Metadata = {
   title: "Dahsboard",
 };
 
 export default async function page() {
   const session = await auth();
-  if (!session) redirect("/login");
+  if (!session?.user) redirect("/login");
   return (
     <main>
       <div className="flex justify-between py-8 text-white">

@@ -5,7 +5,6 @@ import { petFormSchema, petIdSchema } from "@/lib/validations";
 import { revalidatePath } from "next/cache";
 import { prisma } from "../../prisma/prisma";
 import bcryptjs from "bcryptjs";
-import { redirect } from "next/navigation";
 
 // --- user actions ---
 export async function logIn(formData: FormData) {
@@ -15,16 +14,20 @@ export async function SignUp(formData: FormData) {
   const email = formData.get("email") as string;
   const password = formData.get("password") as string;
 
-  await prisma.user.create({
-    data: {
-      email: email,
-      hashedPassword: await bcryptjs.hash(password, 10),
-    },
-  });
-  redirect("/login");
+  try {
+    await prisma.user.create({
+      data: {
+        email: email,
+        hashedPassword: await bcryptjs.hash(password, 10),
+      },
+    });
+    return { success: true };
+  } catch {
+    return { message: "Could not add user!" };
+  }
 }
 export async function LogOut() {
-  await signOut();
+  await signOut({ redirectTo: "/" });
 }
 
 // --- pet actions ---

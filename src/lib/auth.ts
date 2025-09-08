@@ -40,4 +40,20 @@ export const { handlers, signIn, signOut, auth } = NextAuth({
     strategy: "jwt",
     maxAge: 1 * 24 * 60 * 60,
   },
+  callbacks: {
+    jwt: ({ token, user }) => {
+      if (user) {
+        // on sign-in
+        token.userId = user.id;
+      }
+      return token;
+    },
+    session: ({ session, token }) => {
+      if (session.user) {
+        session.user.id = token.userId as string;
+      }
+
+      return session;
+    },
+  },
 });
