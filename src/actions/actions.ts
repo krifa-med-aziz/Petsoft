@@ -4,7 +4,7 @@ import { signIn, signOut } from "@/lib/auth";
 import { petFormSchema, petIdSchema } from "@/lib/validations";
 import { revalidatePath } from "next/cache";
 import { prisma } from "../../prisma/prisma";
-import bcrypt from "bcrypt";
+import bcryptjs from "bcryptjs";
 import { redirect } from "next/navigation";
 
 // --- user actions ---
@@ -18,7 +18,7 @@ export async function SignUp(formData: FormData) {
   await prisma.user.create({
     data: {
       email: email,
-      hashedPassword: await bcrypt.hash(password, 10),
+      hashedPassword: await bcryptjs.hash(password, 10),
     },
   });
   redirect("/login");
