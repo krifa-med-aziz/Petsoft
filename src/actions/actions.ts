@@ -5,6 +5,7 @@ import { petFormSchema, petIdSchema } from "@/lib/validations";
 import { revalidatePath } from "next/cache";
 import { prisma } from "../../prisma/prisma";
 import bcryptjs from "bcryptjs";
+import { checkAuth, getPetById } from "@/lib/server-utils";
 
 // --- user actions ---
 export async function logIn(formData: FormData) {
@@ -32,6 +33,8 @@ export async function LogOut() {
 
 // --- pet actions ---
 export async function addPet(newPet: unknown) {
+  const session = await checkAuth();
+
   const validatePet = petFormSchema.safeParse(newPet);
   if (!validatePet.success) {
     return {
@@ -44,6 +47,7 @@ export async function addPet(newPet: unknown) {
         ...validatePet.data,
         imageUrl: validatePet.data.imageUrl ?? "",
         notes: validatePet.data.notes ?? "",
+        userId: session.user.id,
       },
     });
   } catch {
@@ -55,6 +59,10 @@ export async function addPet(newPet: unknown) {
 }
 
 export async function editPet(petId: unknown, pet: unknown) {
+  // auth check
+  const session = await checkAuth();
+
+  // validation
   const validatePetId = petIdSchema.safeParse(petId);
   const validatePet = petFormSchema.safeParse(pet);
   if (!validatePet.success || !validatePetId.success) {
@@ -62,6 +70,17 @@ export async function editPet(petId: unknown, pet: unknown) {
       message: "Invalid pet Data!",
     };
   }
+
+  // authorization check
+  const existingPet = await getPetById(validatePetId.data);
+  if (!existingPet) {
+    return { message: "Pet not found!" };
+  }
+  if (existingPet.userId !== session.user.id) {
+    return { message: "Not Authorized!" };
+  }
+
+  // database mutation
   try {
     await prisma.pet.update({
       where: {
@@ -78,12 +97,27 @@ export async function editPet(petId: unknown, pet: unknown) {
 }
 
 export async function checkOutPet(petId: unknown) {
+  // auth check
+  const session = await checkAuth();
+
+  // validation
   const validatePetId = petIdSchema.safeParse(petId);
   if (!validatePetId.success) {
     return {
       message: "Invalid Pet Data!",
     };
   }
+
+  // authorization check
+  const pet = await getPetById(validatePetId.data);
+  if (!pet) {
+    return { message: "Pet not found!" };
+  }
+  if (pet.userId !== session.user.id) {
+    return { message: "Not Authorized!" };
+  }
+
+  // database mutation
   try {
     await prisma.pet.delete({
       where: {

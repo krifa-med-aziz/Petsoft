@@ -3,24 +3,16 @@ import AppHeader from "@/components/App-header";
 import BackgroundPattern from "@/components/BackgroundPattern";
 import PetContextProvider from "@/contexts/pet-context-provider";
 import { TPet } from "@/lib/types";
-
 import React from "react";
-import { prisma } from "../../../../prisma/prisma";
-import { auth } from "@/lib/auth";
-import { redirect } from "next/navigation";
+import { checkAuth, getPetsByUserId } from "@/lib/server-utils";
 
 export default async function appLayout({
   children,
 }: Readonly<{
   children: React.ReactNode;
 }>) {
-  const session = await auth();
-  if (!session?.user) redirect("/login");
-  const Pets: TPet[] = await prisma.pet.findMany({
-    where: {
-      userId: session.user.id,
-    },
-  });
+  const session = await checkAuth();
+  const Pets: TPet[] = await getPetsByUserId(session.user.id);
   return (
     <>
       <BackgroundPattern />
