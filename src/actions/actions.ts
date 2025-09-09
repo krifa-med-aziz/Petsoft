@@ -1,19 +1,38 @@
 "use server";
 
 import { signIn, signOut } from "@/lib/auth";
-import { petFormSchema, petIdSchema } from "@/lib/validations";
+import { authSchema, petFormSchema, petIdSchema } from "@/lib/validations";
 import { revalidatePath } from "next/cache";
 import { prisma } from "../../prisma/prisma";
 import bcryptjs from "bcryptjs";
 import { checkAuth, getPetById } from "@/lib/server-utils";
+import { redirect } from "next/navigation";
+import { PrismaClientKnownRequestError } from "@prisma/client/runtime/library";
 
 // --- user actions ---
 export async function logIn(formData: FormData) {
-  await signIn("credentials", formData);
+  const fromDataObject = Object.fromEntries(formData.entries());
+  const validatedFormData = authSchema.safeParse(fromDataObject);
+
+  if (!validatedFormData.success) {
+    return { message: "Invalid form data." };
+  }
+  const { email, password } = validatedFormData.data;
+
+  await signIn("credentials", {
+    email,
+    password,
+  });
+
+  redirect("/app/dashboard");
 }
 export async function SignUp(formData: FormData) {
-  const email = formData.get("email") as string;
-  const password = formData.get("password") as string;
+  const formDataObject = Object.fromEntries(formData.entries());
+  const validatedFormData = authSchema.safeParse(formDataObject);
+  if (!validatedFormData.success) {
+    return { message: "Invalid form data." };
+  }
+  const { email, password } = validatedFormData.data;
 
   try {
     await prisma.user.create({
@@ -23,8 +42,15 @@ export async function SignUp(formData: FormData) {
       },
     });
     return { success: true };
-  } catch {
-    return { message: "Could not add user!" };
+  } catch (error) {
+    if (
+      error instanceof PrismaClientKnownRequestError &&
+      error.code === "P2002"
+    ) {
+      return { message: "Email already exists." };
+    }
+
+    return { message: "Could not add user." };
   }
 }
 export async function LogOut() {

@@ -5,6 +5,7 @@ import { PrismaAdapter } from "@auth/prisma-adapter";
 import type { Adapter } from "@auth/core/adapters";
 import bcryptjs from "bcryptjs";
 import { getUserByEmail } from "./server-utils";
+import { authSchema } from "./validations";
 
 export const { handlers, signIn, signOut, auth } = NextAuth({
   adapter: PrismaAdapter(prisma) as Adapter,
@@ -15,18 +16,19 @@ export const { handlers, signIn, signOut, auth } = NextAuth({
         password: {},
       },
       authorize: async (credentials) => {
-        const email = credentials.email as string;
-        const password = credentials.password as string;
+        const validatedFormData = authSchema.safeParse(credentials);
+        if (!validatedFormData.success) {
+          return null;
+        }
+        const { email, password } = validatedFormData.data;
 
         const user = await getUserByEmail(email);
-
         if (!user) return null;
 
         const passwordMatch = await bcryptjs.compare(
           password,
           user.hashedPassword
         );
-
         if (!passwordMatch) return null;
 
         return user;
@@ -49,7 +51,6 @@ export const { handlers, signIn, signOut, auth } = NextAuth({
       if (session.user) {
         session.user.id = token.userId as string;
       }
-
       return session;
     },
   },

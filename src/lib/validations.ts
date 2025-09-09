@@ -36,3 +36,11 @@ export const petFormSchema = z.object({
     .optional()
     .or(z.literal("")),
 });
+
+export const authSchema = z.object({
+  email: z.string().email({ message: "Email must be a valid email address." }),
+  password: z
+    .string()
+    .min(4, { message: "Password must be at least 8 characters long." })
+    .max(100, { message: "Password must be less than 100 characters." }),
+});

@@ -2,9 +2,9 @@
 import React from "react";
 import { Label } from "./ui/label";
 import { Input } from "./ui/input";
-import { Button } from "./ui/button";
-import { logIn } from "@/actions/actions";
 import { useUserContext } from "@/lib/hooks";
+import AuthFormBtn from "./AuthFormBtn";
+import { logIn } from "@/actions/actions";
 
 type AuthFormProps = {
   type: "login" | "signup";
@@ -30,6 +30,8 @@ export default function AuthForm({ type }: AuthFormProps) {
           name="email"
           placeholder="Email"
           className="border-black/50"
+          required
+          maxLength={100}
         />
       </div>
       <div className="grid w-full max-w-sm items-center gap-3 space-y-1">
@@ -39,9 +41,11 @@ export default function AuthForm({ type }: AuthFormProps) {
           name="password"
           placeholder="Password"
           className="border-black/50"
+          required
+          maxLength={100}
         />
       </div>
-      <Button>{type === "login" ? "Log In" : "Sign Up"}</Button>
+      <AuthFormBtn type={type} />
     </form>
   );
 }
