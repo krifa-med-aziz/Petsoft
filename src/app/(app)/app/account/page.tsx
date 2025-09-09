@@ -1,7 +1,7 @@
 import { LogOut } from "@/actions/actions";
 import ContentBlock from "@/components/ContentBlock";
 import H1 from "@/components/H1";
-import { Button } from "@/components/ui/button";
+import SignOutBtn from "@/components/SignOutBtn";
 import { checkAuth } from "@/lib/server-utils";
 import { Metadata } from "next";
 import React from "react";
@@ -21,7 +21,7 @@ export default async function page() {
       <ContentBlock className="min-h-[400px] flex justify-center items-center flex-col gap-4">
         <p className="font-semibold">Logged in as {session.user?.email}</p>
         <form action={LogOut}>
-          <Button variant={"destructive"}>Log Out</Button>
+          <SignOutBtn />
         </form>
       </ContentBlock>
     </main>

@@ -7,10 +7,10 @@ import { prisma } from "../../prisma/prisma";
 import bcryptjs from "bcryptjs";
 import { checkAuth, getPetById } from "@/lib/server-utils";
 import { redirect } from "next/navigation";
-import { PrismaClientKnownRequestError } from "@prisma/client/runtime/library";
+import { AuthError } from "next-auth";
 
 // --- user actions ---
-export async function logIn(formData: FormData) {
+export async function logIn(prevState: unknown, formData: FormData) {
   const fromDataObject = Object.fromEntries(formData.entries());
   const validatedFormData = authSchema.safeParse(fromDataObject);
 
@@ -19,14 +19,31 @@ export async function logIn(formData: FormData) {
   }
   const { email, password } = validatedFormData.data;
 
-  await signIn("credentials", {
-    email,
-    password,
-  });
-
-  redirect("/app/dashboard");
+  try {
+    await signIn("credentials", {
+      email,
+      password,
+    });
+    redirect("/app/dashboard");
+  } catch (error) {
+    if (error instanceof AuthError) {
+      switch (error.type) {
+        case "CredentialsSignin": {
+          return {
+            message: "Invalid credentials!",
+          };
+        }
+        default: {
+          return {
+            message: "Could not sign in!",
+          };
+        }
+      }
+    }
+    throw error; // nextJs redirects throws error,so we need to rethrow it
+  }
 }
-export async function SignUp(formData: FormData) {
+export async function SignUp(prevState: unknown, formData: FormData) {
   const formDataObject = Object.fromEntries(formData.entries());
   const validatedFormData = authSchema.safeParse(formDataObject);
   if (!validatedFormData.success) {
@@ -41,17 +58,19 @@ export async function SignUp(formData: FormData) {
         hashedPassword: await bcryptjs.hash(password, 10),
       },
     });
-    return { success: true };
   } catch (error) {
     if (
-      error instanceof PrismaClientKnownRequestError &&
+      error &&
+      typeof error === "object" &&
+      "code" in error &&
       error.code === "P2002"
     ) {
       return { message: "Email already exists." };
     }
-
-    return { message: "Could not add user." };
+    return { message: "Could not create user." };
   }
+
+  redirect("/login");
 }
 export async function LogOut() {
   await signOut({ redirectTo: "/" });

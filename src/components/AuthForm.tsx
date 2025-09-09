@@ -2,25 +2,20 @@
 import React from "react";
 import { Label } from "./ui/label";
 import { Input } from "./ui/input";
-import { useUserContext } from "@/lib/hooks";
 import AuthFormBtn from "./AuthFormBtn";
-import { logIn } from "@/actions/actions";
+import { logIn, SignUp } from "@/actions/actions";
+import { useFormState } from "react-dom";
 
 type AuthFormProps = {
   type: "login" | "signup";
 };
 
 export default function AuthForm({ type }: AuthFormProps) {
-  const { handleAddUser } = useUserContext();
+  const [signUpError, signUpAction] = useFormState(SignUp, { message: "" });
+  const [logInError, logInAction] = useFormState(logIn, { message: "" });
   return (
     <form
-      action={(formData) => {
-        if (type === "login") {
-          logIn(formData);
-        } else {
-          handleAddUser(formData);
-        }
-      }}
+      action={type === "login" ? logInAction : signUpAction}
       className="flex flex-col gap-y-6"
     >
       <div className="grid w-full </form>max-w-sm items-center gap-3 space-y-1">
@@ -45,6 +40,14 @@ export default function AuthForm({ type }: AuthFormProps) {
           maxLength={100}
         />
       </div>
+      {signUpError?.message && (
+        <p className="text-red-500 text-sm text-center">
+          {signUpError.message}
+        </p>
+      )}
+      {logInError?.message && (
+        <p className="text-red-500 text-sm text-center">{logInError.message}</p>
+      )}
       <AuthFormBtn type={type} />
     </form>
   );
