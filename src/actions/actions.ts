@@ -9,6 +9,9 @@ import { checkAuth, getPetById } from "@/lib/server-utils";
 import { redirect } from "next/navigation";
 import { AuthError } from "next-auth";
 
+// eslint-disable-next-line @typescript-eslint/no-require-imports
+const stripe = require("stripe")(process.env.STRIPE_SECRET_KEY);
+
 // --- user actions ---
 export async function logIn(prevState: unknown, formData: FormData) {
   const fromDataObject = Object.fromEntries(formData.entries());
@@ -23,8 +26,8 @@ export async function logIn(prevState: unknown, formData: FormData) {
     await signIn("credentials", {
       email,
       password,
+      redirectTo: "/payment",
     });
-    redirect("/app/dashboard");
   } catch (error) {
     if (error instanceof AuthError) {
       switch (error.type) {
@@ -175,4 +178,21 @@ export async function checkOutPet(petId: unknown) {
     };
   }
   revalidatePath("/app", "layout");
+}
+// --- payment actions ---
+export async function createCheckoutSession() {
+  const session = await checkAuth();
+  const checkoutSession = await stripe.checkout.sessions.create({
+    email: session.user.email,
+    line_items: [
+      {
+        price: process.env.STRIPE_PRODUCT_ID,
+        quantity: 1,
+      },
+    ],
+    mode: "payment",
+    success_url: `${process.env.CANONICAL_URL}/payment?success=true`,
+    cancel_url: `${process.env.CANONICAL_URL}/payment?cancelled=true`,
+  });
+  redirect(checkoutSession.url);
 }

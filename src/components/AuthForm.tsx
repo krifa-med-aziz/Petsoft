@@ -18,7 +18,7 @@ export default function AuthForm({ type }: AuthFormProps) {
       action={type === "login" ? logInAction : signUpAction}
       className="flex flex-col gap-y-6"
     >
-      <div className="grid w-full </form>max-w-sm items-center gap-3 space-y-1">
+      <div className="grid w-full max-w-sm items-center gap-3 space-y-1">
         <Label htmlFor="email">Email</Label>
         <Input
           type="email"

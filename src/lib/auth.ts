@@ -53,5 +53,12 @@ export const { handlers, signIn, signOut, auth } = NextAuth({
       }
       return session;
     },
+    redirect: ({ url, baseUrl }) => {
+      // Redirect to payment page after sign in
+      if (url === baseUrl || url === `${baseUrl}/`) {
+        return `${baseUrl}/payment`;
+      }
+      return url;
+    },
   },
 });
