@@ -13,7 +13,7 @@ export const metadata: Metadata = {
 
 export default async function Page() {
   const session = await auth();
-  if (session?.user) redirect("/app/dashboard");
+  if (session?.user) redirect("/payment");
   return (
     <main className="flex flex-col justify-center gap-y-3 items-center px-4">
       <H1>Sign Up</H1>
