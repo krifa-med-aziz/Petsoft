@@ -2,18 +2,16 @@
 import { createCheckoutSession } from "@/actions/actions";
 import H1 from "@/components/H1";
 import { Button } from "@/components/ui/button";
+import { useSearchParams } from "next/navigation";
 import { useTransition } from "react";
 
-export default function Page({
-  searchParams,
-}: {
-  searchParams: { [key: string]: string | string[] | undefined };
-}) {
+export default function Page() {
   const [isPending, startTransition] = useTransition();
+  const searchParams = useSearchParams();
   return (
     <main className="flex flex-col items-center gap-y-6">
       <H1>PetSoft access requires payment</H1>
-      {!searchParams.success && (
+      {!searchParams.get("success") && (
         <Button
           disabled={isPending}
           onClick={() => {
@@ -25,12 +23,12 @@ export default function Page({
           Buy Lifetime access for $299
         </Button>
       )}
-      {searchParams.success && (
+      {searchParams.get("success") && (
         <p className="text-sm text-green-700">
           Payment successful! You now have lifetime access to PetSoft.
         </p>
       )}
-      {searchParams.cancelled && (
+      {searchParams.get("cancelled") && (
         <p className="text-sm text-red-700">
           Payment cancelled. You can try again.
         </p>

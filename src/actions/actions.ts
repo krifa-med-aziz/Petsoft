@@ -183,10 +183,10 @@ export async function checkOutPet(petId: unknown) {
 export async function createCheckoutSession() {
   const session = await checkAuth();
   const checkoutSession = await stripe.checkout.sessions.create({
-    email: session.user.email,
+    customer_email: session.user.email,
     line_items: [
       {
-        price: process.env.STRIPE_PRODUCT_ID,
+        price: process.env.STRIPE_PRICE_ID,
         quantity: 1,
       },
     ],
