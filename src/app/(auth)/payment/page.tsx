@@ -2,15 +2,28 @@
 import { createCheckoutSession } from "@/actions/actions";
 import H1 from "@/components/H1";
 import { Button } from "@/components/ui/button";
-import { useSearchParams } from "next/navigation";
+import { redirect, useSearchParams } from "next/navigation";
 import { useTransition } from "react";
+import { useSession } from "next-auth/react";
 
 export default function Page() {
   const [isPending, startTransition] = useTransition();
   const searchParams = useSearchParams();
+  const { data: session, update, status } = useSession();
   return (
     <main className="flex flex-col items-center gap-y-6">
       <H1>PetSoft access requires payment</H1>
+      {searchParams.get("success") && (
+        <Button
+          disabled={status === "loading" || session?.user.hasAccess}
+          onClick={async () => {
+            await update(true);
+            redirect("/app/dashboard");
+          }}
+        >
+          Access PetSoft
+        </Button>
+      )}
       {!searchParams.get("success") && (
         <Button
           disabled={isPending}

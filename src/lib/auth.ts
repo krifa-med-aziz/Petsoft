@@ -40,27 +40,25 @@ export const { handlers, signIn, signOut, auth } = NextAuth({
     maxAge: 1 * 24 * 60 * 60,
   },
   callbacks: {
-    jwt: ({ token, user }) => {
+    jwt: async ({ token, user, trigger }) => {
       if (user) {
         // on sign-in
         token.userId = user.id;
         token.hasAccess = user.hasAccess;
+        token.email = user.email!;
+      }
+      if (trigger === "update") {
+        const userFromDb = await getUserByEmail(token.email);
+        if (userFromDb) {
+          token.hasAccess = userFromDb.hasAccess;
+        }
       }
       return token;
     },
     session: ({ session, token }) => {
-      if (session.user) {
-        session.user.id = token.userId;
-        session.user.hasAccess = token.hasAccess;
-      }
+      session.user.id = token.userId;
+      session.user.hasAccess = token.hasAccess;
       return session;
-    },
-    redirect: ({ url, baseUrl }) => {
-      // Redirect to payment page after sign in
-      if (url === baseUrl || url === `${baseUrl}/`) {
-        return `${baseUrl}/payment`;
-      }
-      return url;
     },
   },
 });
