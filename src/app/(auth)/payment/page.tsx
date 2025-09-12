@@ -3,16 +3,16 @@ import { createCheckoutSession } from "@/actions/actions";
 import H1 from "@/components/H1";
 import { Button } from "@/components/ui/button";
 import { redirect, useSearchParams } from "next/navigation";
-import { useTransition } from "react";
+import { useTransition, Suspense } from "react";
 import { useSession } from "next-auth/react";
 
-export default function Page() {
+function PaymentContent() {
   const [isPending, startTransition] = useTransition();
   const searchParams = useSearchParams();
   const { data: session, update, status } = useSession();
+  
   return (
-    <main className="flex flex-col items-center gap-y-6">
-      <H1>PetSoft access requires payment</H1>
+    <>
       {searchParams.get("success") && (
         <Button
           disabled={status === "loading" || session?.user.hasAccess}
@@ -46,6 +46,17 @@ export default function Page() {
           Payment cancelled. You can try again.
         </p>
       )}
+    </>
+  );
+}
+
+export default function Page() {
+  return (
+    <main className="flex flex-col items-center gap-y-6">
+      <H1>PetSoft access requires payment</H1>
+      <Suspense fallback={<div>Loading...</div>}>
+        <PaymentContent />
+      </Suspense>
     </main>
   );
 }
