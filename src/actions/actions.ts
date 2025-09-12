@@ -8,9 +8,16 @@ import bcryptjs from "bcryptjs";
 import { checkAuth, getPetById } from "@/lib/server-utils";
 import { redirect } from "next/navigation";
 import { AuthError } from "next-auth";
+import Stripe from "stripe";
 
-// eslint-disable-next-line @typescript-eslint/no-require-imports
-const stripe = require("stripe")(process.env.STRIPE_SECRET_KEY);
+// Initialize Stripe with build-time safety
+const stripeSecretKey = process.env.STRIPE_SECRET_KEY;
+let stripe: Stripe | null = null;
+if (stripeSecretKey) {
+  stripe = new Stripe(stripeSecretKey, {
+    apiVersion: "2025-08-27.basil",
+  });
+}
 
 // --- user actions ---
 export async function logIn(prevState: unknown, formData: FormData) {
@@ -181,7 +188,17 @@ export async function checkOutPet(petId: unknown) {
 }
 // --- payment actions ---
 export async function createCheckoutSession() {
+  // Check if Stripe is initialized
+  if (!stripe) {
+    throw new Error("Stripe is not properly configured");
+  }
+
   const session = await checkAuth();
+
+  if (!session.user.email) {
+    throw new Error("User email is required for checkout");
+  }
+
   const checkoutSession = await stripe.checkout.sessions.create({
     customer_email: session.user.email,
     line_items: [
@@ -194,5 +211,10 @@ export async function createCheckoutSession() {
     success_url: `${process.env.CANONICAL_URL}/payment?success=true`,
     cancel_url: `${process.env.CANONICAL_URL}/payment?cancelled=true`,
   });
+
+  if (!checkoutSession.url) {
+    throw new Error("Failed to create checkout session");
+  }
+
   redirect(checkoutSession.url);
 }
