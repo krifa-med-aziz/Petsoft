@@ -11,7 +11,7 @@ export const metadata: Metadata = {
 
 export default async function Page() {
   return (
-    <main className="flex flex-col justify-center gap-y-3 items-center px-4">
+    <main className="flex flex-col justify-center gap-y-3 items-center px-4 text-center">
       <H1>Sign Up</H1>
       <AuthForm type="signup" />
       <p className="mt-2 text-sm text-zinc-500">

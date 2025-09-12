@@ -11,7 +11,7 @@ export const metadata: Metadata = {
 
 export default async function Home() {
   return (
-    <main className="flex flex-col justify-center gap-y-3 items-center px-4">
+    <main className="flex flex-col justify-center gap-y-3 items-center px-4 text-center">
       <H1>Log In</H1>
       <AuthForm type="login" />
       <p className="mt-2 text-zinc-500 text-sm">

@@ -10,7 +10,7 @@ function PaymentContent() {
   const [isPending, startTransition] = useTransition();
   const searchParams = useSearchParams();
   const { data: session, update, status } = useSession();
-  
+
   return (
     <>
       {searchParams.get("success") && (
@@ -52,7 +52,7 @@ function PaymentContent() {
 
 export default function Page() {
   return (
-    <main className="flex flex-col items-center gap-y-6">
+    <main className="flex flex-col items-center gap-y-6 text-center">
       <H1>PetSoft access requires payment</H1>
       <Suspense fallback={<div>Loading...</div>}>
         <PaymentContent />

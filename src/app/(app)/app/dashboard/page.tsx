@@ -21,7 +21,7 @@ export default async function page() {
   if (!session?.user) redirect("/login");
   return (
     <main>
-      <div className="flex justify-between py-8 text-white">
+      <div className="flex justify-between py-8 text-white flex-col sm:flex-row text-center sm:text-left gap-4 sm:gap-0">
         <Branding />
         <Stats />
       </div>
