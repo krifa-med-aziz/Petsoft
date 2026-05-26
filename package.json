@@ -3,8 +3,8 @@
   "version": "0.1.0",
   "private": true,
   "scripts": {
-    "dev": "rmdir /s /q .next 2>nul & next dev --turbopack",
-    "build": "next build --turbopack",
+    "dev": "rm -rf .next && next dev",
+    "build": "next build",
     "start": "next start",
     "lint": "eslint",
     "postinstall": "prisma generate"
