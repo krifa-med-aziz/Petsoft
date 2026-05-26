@@ -2,13 +2,12 @@ import NextAuth from "next-auth";
 import Credentials from "next-auth/providers/credentials";
 import { prisma } from "../../prisma/prisma";
 import { PrismaAdapter } from "@auth/prisma-adapter";
-import type { Adapter } from "@auth/core/adapters";
 import bcryptjs from "bcryptjs";
 import { getUserByEmail } from "./server-utils";
 import { authSchema } from "./validations";
 
 export const { handlers, signIn, signOut, auth } = NextAuth({
-  adapter: PrismaAdapter(prisma) as Adapter,
+  adapter: PrismaAdapter(prisma),
   providers: [
     Credentials({
       credentials: {
@@ -47,7 +46,7 @@ export const { handlers, signIn, signOut, auth } = NextAuth({
         token.hasAccess = user.hasAccess;
         token.email = user.email!;
       }
-      if (trigger === "update") {
+      if (trigger === "update" && token.email) {
         const userFromDb = await getUserByEmail(token.email);
         if (userFromDb) {
           token.hasAccess = userFromDb.hasAccess;
@@ -56,8 +55,8 @@ export const { handlers, signIn, signOut, auth } = NextAuth({
       return token;
     },
     session: ({ session, token }) => {
-      session.user.id = token.userId;
-      session.user.hasAccess = token.hasAccess;
+      session.user.id = token.userId as string;
+      session.user.hasAccess = token.hasAccess as boolean;
       return session;
     },
   },
