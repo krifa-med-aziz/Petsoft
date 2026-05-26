@@ -56,7 +56,7 @@ export async function POST(request: Request) {
     switch (event.type) {
       case "checkout.session.completed": {
         const session = event.data.object as Stripe.Checkout.Session;
-        const customerEmail = session.customer_email;
+        const customerEmail = session.customer_email || session.customer_details?.email;
 
         if (!customerEmail) {
           console.log("No customer email in checkout session");
