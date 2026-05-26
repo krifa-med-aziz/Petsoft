@@ -1,7 +1,8 @@
-import { auth } from "@/lib/auth";
+import NextAuth from "next-auth";
+import { nextAuthConfig } from "./lib/auth.config";
 import { NextResponse } from "next/server";
 
-export default auth((req) => {
+export default NextAuth(nextAuthConfig).auth((req) => {
   const isLoggedIn = !!req.auth;
   const isTryingToAccessApp = req.nextUrl.pathname.includes("/app");
   const hasAccess = req.auth?.user.hasAccess;

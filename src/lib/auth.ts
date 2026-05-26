@@ -5,10 +5,13 @@ import { PrismaAdapter } from "@auth/prisma-adapter";
 import bcryptjs from "bcryptjs";
 import { getUserByEmail } from "./server-utils";
 import { authSchema } from "./validations";
+import { nextAuthConfig } from "./auth.config";
 
 export const { handlers, signIn, signOut, auth } = NextAuth({
+  ...nextAuthConfig,
   adapter: PrismaAdapter(prisma),
   providers: [
+    ...nextAuthConfig.providers,
     Credentials({
       credentials: {
         email: {},
@@ -39,6 +42,7 @@ export const { handlers, signIn, signOut, auth } = NextAuth({
     maxAge: 1 * 24 * 60 * 60,
   },
   callbacks: {
+    ...nextAuthConfig.callbacks,
     jwt: async ({ token, user, trigger }) => {
       if (user) {
         // on sign-in
@@ -53,11 +57,6 @@ export const { handlers, signIn, signOut, auth } = NextAuth({
         }
       }
       return token;
-    },
-    session: ({ session, token }) => {
-      session.user.id = token.userId as string;
-      session.user.hasAccess = token.hasAccess as boolean;
-      return session;
     },
   },
 });
